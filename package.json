@@ -1,0 +1,77 @@
+{
+  "name": "three-vmd",
+  "version": "0.0.1",
+  "description": "VMD Loader for VRM with three.js",
+  "license": "MIT",
+  "main": "lib/three-vmd.module.js",
+  "types": "types/index.d.ts",
+  "author": "sho",
+  "files": [
+    "lib",
+    "types",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sskmy1024y/three-vmd.git"
+  },
+  "scripts": {
+    "version": "yarn all",
+    "postpublish": "yarn gh-pages",
+    "clean": "rimraf docs lib types",
+    "all": "yarn lint && yarn clean && yarn build",
+    "build": "yarn build-dev && yarn build-prod && yarn build-types",
+    "build-dev": "webpack --mode development",
+    "build-prod": "webpack --mode production",
+    "build-types": "tsc --emitDeclarationOnly",
+    "gh-pages": "node ./bin/gh-pages.js",
+    "lint": "eslint \"src/**/*.{ts,tsx}\"",
+    "typedefgen": "node ./bin/typedefgen.js"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.{ts,tsx}": [
+      "eslint --fix",
+      "git add"
+    ]
+  },
+  "prettier": {
+    "endOfLine": "lf",
+    "tabWidth": 2,
+    "singleQuote": true,
+    "semi": false,
+    "arrowParens": "always",
+    "trailingComma": "all",
+    "printWidth": 120
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@pixiv/three-vrm": "^0.3.4",
+    "@types/webpack": "^4.41.11",
+    "@types/webpack-merge": "^4.1.5",
+    "@typescript-eslint/eslint-plugin": "^2.28.0",
+    "@typescript-eslint/parser": "^2.28.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.1",
+    "eslint-plugin-prettier": "^3.1.3",
+    "gh-pages": "^2.2.0",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.1.3",
+    "mmd-parser": "^1.0.3",
+    "prettier": "^2.0.4",
+    "three": "^0.115.0",
+    "ts-loader": "^7.0.0",
+    "ts-node": "^8.4.1",
+    "typescript": "^3.8.3",
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.11",
+    "webpack-merge": "^4.2.2"
+  },
+  "peerDependencies": {
+    "@pixiv/three-vrm": "^0.3.4"
+  }
+}
