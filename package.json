@@ -17,13 +17,15 @@
   },
   "scripts": {
     "version": "yarn all",
+    "postpublish": "yarn gh-pages",
     "clean": "rimraf docs lib types",
     "all": "yarn lint && yarn clean && yarn build",
     "build": "yarn build-dev && yarn build-prod && yarn build-types",
     "build-dev": "webpack --mode development",
     "build-prod": "webpack --mode production",
     "build-types": "tsc --emitDeclarationOnly",
-    "lint": "eslint \"src/**/*.{ts,tsx}\""
+    "lint": "eslint \"src/**/*.{ts,tsx}\"",
+    "gh-pages": "node ./bin/gh-pages.js"
   },
   "husky": {
     "hooks": {
@@ -55,7 +57,9 @@
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.1",
     "eslint-plugin-prettier": "^3.1.3",
+    "gh-pages": "^2.2.0",
     "husky": "^4.2.5",
+    "lint-staged": "^10.1.3",
     "mmd-parser": "^1.0.3",
     "prettier": "^2.0.4",
     "three": "^0.115.0",
