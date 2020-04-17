@@ -24,8 +24,9 @@
     "build-dev": "webpack --mode development",
     "build-prod": "webpack --mode production",
     "build-types": "tsc --emitDeclarationOnly",
-    "lint": "eslint \"src/**/*.{ts,tsx}\"",
-    "gh-pages": "node ./bin/gh-pages.js"
+    "gh-pages": "node ./bin/gh-pages.js",
+    "test": "yarn lint",
+    "lint": "eslint \"src/**/*.{ts,tsx}\""
   },
   "husky": {
     "hooks": {
