@@ -6,12 +6,19 @@
   "main": "lib/three-vmd.module.js",
   "types": "types/index.d.ts",
   "author": "sho",
+  "files": [
+    "lib",
+    "types",
+    "LICENSE"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/sskmy1024y/three-vmd.git"
   },
   "scripts": {
+    "version": "yarn all",
     "clean": "rimraf docs lib types",
+    "all": "yarn lint && yarn clean && yarn build",
     "build": "yarn build-dev && yarn build-prod && yarn build-types",
     "build-dev": "webpack --mode development",
     "build-prod": "webpack --mode production",
@@ -60,6 +67,6 @@
     "webpack-merge": "^4.2.2"
   },
   "peerDependencies": {
-    "@pixiv/three-vrm": "^0.103.0"
+    "@pixiv/three-vrm": "^0.3.4"
   }
 }
