@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 
 import { useLoader, Canvas, useFrame } from 'react-three-fiber'
-import { Scene, Group, NumberKeyframeTrack, AnimationClip, AnimationMixer, LoopRepeat } from 'three'
+import { Scene, Group, AnimationMixer, LoopRepeat } from 'three'
 import { GLTFLoader, GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 
 import { VRM, VRMSchema, VRMUtils } from '@pixiv/three-vrm'
@@ -68,21 +68,15 @@ export function Model({ gltf, vrm, vmd }: ModelProps) {
   }, [gltf, vrm, scene])
 
   useEffect(() => {
-    const trackName = vrm.blendShapeProxy?.getBlendShapeTrackName(VRMSchema.BlendShapePresetName.Blink) // name
+    if (mixer === null || vmd === null) return
 
-    if (!trackName || mixer === null || scene === null) return
+    const clip = vmd.toAnimationClipForVRM(vrm)
 
-    const blinkTrack = new NumberKeyframeTrack(
-      trackName,
-      [0.0, 0.5, 1.0], // times
-      [0.0, 1.0, 0.0], // values
-    )
-    const clip = new AnimationClip('blink', 1.0, [blinkTrack])
     const action = mixer.clipAction(clip)
     action.setLoop(LoopRepeat, 1 / 0)
     action.reset()
     action.play()
-  }, [vrm, mixer, scene])
+  }, [mixer, vrm, vmd])
 
   useFrame((_, delta) => {
     mixer?.update(delta)

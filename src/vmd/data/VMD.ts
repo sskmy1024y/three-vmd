@@ -1,9 +1,7 @@
 import * as THREE from 'three'
-import { PMDSemiStandardBoneName, PMDStandardBoneName } from '.'
+import { PMDSemiStandardBoneName, PMDStandardBoneName, PMDMorphName } from '.'
 
 import { VRMSchema, VRM } from '@pixiv/three-vrm'
-
-const USERDATA_KEY_VRM = 'VRM'
 
 export class VMD {
   public metadata: VMDMetadata
@@ -102,10 +100,12 @@ export class VMD {
 
       motions.forEach((motion) => {
         times.push(motion.frameNum / 30) // 30 fps
+
         const p = new THREE.Vector3(-motion.position[0], motion.position[1], -motion.position[2])
           .multiplyScalar(0.08) // 1 unit length in VMD = 0.08 m
-          .add(bone.userData[USERDATA_KEY_VRM].default.position)
+          .add(bone.position)
         positions.push(p.x, p.y, p.z)
+
         const q = new THREE.Quaternion(motion.rotation[0], -motion.rotation[1], motion.rotation[2], -motion.rotation[3])
         if (rotationOffset) {
           q.multiply(rotationOffset)
@@ -136,40 +136,26 @@ export class VMD {
       tracks.push(quaternionTrack)
     })
 
-    // morphsMap.forEach((morphs, morphName) => {
-    //   const blendShapeGroupName = morphToBlendShapeGroup.get(morphName) || morphName
-    //   // const blendShapeGroup = vrm.blendShapeMaster.blendShapeGroups.find(
-    //   const trackName = vrm.blendShapeProxy?.getBlendShapeTrackName(blendShapeGroupName)
-    //   if (!trackName) {
-    //     return
-    //   }
+    morphsMap.forEach((morphs, morphName) => {
+      // eslint-disable-next-line @typescript-eslint/no-use-before-define
+      const blendShapeGroupName = morphToBlendShapeGroup.get(morphName) || morphName
+      // const blendShapeGroup = vrm.blendShapeMaster.blendShapeGroups.find(
+      const trackName = vrm.blendShapeProxy?.getBlendShapeTrackName(blendShapeGroupName)
+      const blendShapeGroup = vrm.blendShapeProxy?.getBlendShapeGroup(blendShapeGroupName)
 
-    //   const blendShapeGroup = vrm.blendShapeProxy?.getBlendShapeGroup(blendShapeGroupName)
-    //   if (!blendShapeGroup) {
-    //     return
-    //   }
+      if (!blendShapeGroup || !trackName) return
 
-    //   blendShapeGroup.binds.forEach((bind) => {
-    //     const meshes = vrm.getSubMeshesByIndex(bind.mesh)
-    //     meshes.forEach((mesh) => {
-    //       const times: number[] = []
-    //       const values: number[] = []
+      const times: number[] = []
+      const values: number[] = []
 
-    //       morphs.forEach((morph) => {
-    //         times.push(morph.frameNum / 30) // 30 fps
-    //         values.push((bind.weight / 100) * morph.weight) // [0, 100] -> [0, 1]
-    //       })
+      morphs.forEach((morph) => {
+        times.push(morph.frameNum / 30) // 30 fps
+        values.push((blendShapeGroup.weight / 100) * morph.weight) // [0, 100] -> [0, 1]
+      })
 
-    //       tracks.push(
-    //         new THREE.NumberKeyframeTrack(
-    //           `${mesh.uuid}.morphTargetInfluences[morphTarget${bind.index}]`,
-    //           times,
-    //           values
-    //         )
-    //       )
-    //     })
-    //   })
-    // })
+      const track = new THREE.NumberKeyframeTrack(trackName, times, values)
+      tracks.push(track)
+    })
 
     return new THREE.AnimationClip(`uuid-${Math.random()}`, -1, tracks)
   }
@@ -209,7 +195,9 @@ export interface VMDCamera {
 }
 
 const pmdToHuman = new Map<string, VRMSchema.HumanoidBoneName>([
-  [PMDSemiStandardBoneName.Waist, VRMSchema.HumanoidBoneName.Hips],
+  [PMDStandardBoneName.LowerBody, VRMSchema.HumanoidBoneName.Hips],
+  [PMDStandardBoneName.UpperBody, VRMSchema.HumanoidBoneName.Spine],
+  [PMDSemiStandardBoneName.UpperBody2, VRMSchema.HumanoidBoneName.Chest],
   [PMDStandardBoneName.LeftLeg, VRMSchema.HumanoidBoneName.LeftUpperLeg],
   [PMDStandardBoneName.LeftKnee, VRMSchema.HumanoidBoneName.LeftLowerLeg],
   [PMDStandardBoneName.LeftAnkle, VRMSchema.HumanoidBoneName.LeftFoot],
@@ -218,9 +206,6 @@ const pmdToHuman = new Map<string, VRMSchema.HumanoidBoneName>([
   [PMDStandardBoneName.RightKnee, VRMSchema.HumanoidBoneName.RightLowerLeg],
   [PMDStandardBoneName.RightAnkle, VRMSchema.HumanoidBoneName.RightFoot],
   [PMDStandardBoneName.RightToes, VRMSchema.HumanoidBoneName.RightToes],
-  [PMDStandardBoneName.LowerBody, VRMSchema.HumanoidBoneName.Spine],
-  [PMDStandardBoneName.UpperBody, VRMSchema.HumanoidBoneName.Chest],
-  [PMDSemiStandardBoneName.UpperBody2, VRMSchema.HumanoidBoneName.UpperChest],
   [PMDStandardBoneName.Neck, VRMSchema.HumanoidBoneName.Neck],
   [PMDStandardBoneName.Head, VRMSchema.HumanoidBoneName.Head],
   [PMDStandardBoneName.LeftEye, VRMSchema.HumanoidBoneName.LeftEye],
@@ -233,7 +218,10 @@ const pmdToHuman = new Map<string, VRMSchema.HumanoidBoneName>([
   [PMDStandardBoneName.RightArm, VRMSchema.HumanoidBoneName.RightUpperArm],
   [PMDStandardBoneName.RightElbow, VRMSchema.HumanoidBoneName.RightLowerArm],
   [PMDStandardBoneName.RightWrist, VRMSchema.HumanoidBoneName.RightHand],
-  [PMDSemiStandardBoneName.LeftThumb0, VRMSchema.HumanoidBoneName.LeftThumbProximal],
+  [PMDStandardBoneName.LeftRing1, VRMSchema.HumanoidBoneName.LeftRingProximal],
+  [PMDStandardBoneName.LeftRing2, VRMSchema.HumanoidBoneName.LeftRingIntermediate],
+  [PMDStandardBoneName.LeftRing3, VRMSchema.HumanoidBoneName.LeftRingDistal],
+  [PMDStandardBoneName.LeftThumb0, VRMSchema.HumanoidBoneName.LeftThumbProximal],
   [PMDStandardBoneName.LeftThumb1, VRMSchema.HumanoidBoneName.LeftThumbIntermediate],
   [PMDStandardBoneName.LeftThumb2, VRMSchema.HumanoidBoneName.LeftThumbDistal],
   [PMDStandardBoneName.LeftIndex1, VRMSchema.HumanoidBoneName.LeftIndexProximal],
@@ -242,13 +230,13 @@ const pmdToHuman = new Map<string, VRMSchema.HumanoidBoneName>([
   [PMDStandardBoneName.LeftMiddle1, VRMSchema.HumanoidBoneName.LeftMiddleProximal],
   [PMDStandardBoneName.LeftMiddle2, VRMSchema.HumanoidBoneName.LeftMiddleIntermediate],
   [PMDStandardBoneName.LeftMiddle3, VRMSchema.HumanoidBoneName.LeftMiddleDistal],
-  [PMDStandardBoneName.LeftRing1, VRMSchema.HumanoidBoneName.LeftRingProximal],
-  [PMDStandardBoneName.LeftRing2, VRMSchema.HumanoidBoneName.LeftRingIntermediate],
-  [PMDStandardBoneName.LeftRing3, VRMSchema.HumanoidBoneName.LeftRingDistal],
   [PMDStandardBoneName.LeftLittle1, VRMSchema.HumanoidBoneName.LeftLittleProximal],
   [PMDStandardBoneName.LeftLittle2, VRMSchema.HumanoidBoneName.LeftLittleIntermediate],
   [PMDStandardBoneName.LeftLittle3, VRMSchema.HumanoidBoneName.LeftLittleDistal],
-  [PMDSemiStandardBoneName.RightThumb0, VRMSchema.HumanoidBoneName.RightThumbProximal],
+  [PMDStandardBoneName.RightRing1, VRMSchema.HumanoidBoneName.RightRingProximal],
+  [PMDStandardBoneName.RightRing2, VRMSchema.HumanoidBoneName.RightRingIntermediate],
+  [PMDStandardBoneName.RightRing3, VRMSchema.HumanoidBoneName.RightRingDistal],
+  [PMDStandardBoneName.RightThumb0, VRMSchema.HumanoidBoneName.RightThumbProximal],
   [PMDStandardBoneName.RightThumb1, VRMSchema.HumanoidBoneName.RightThumbIntermediate],
   [PMDStandardBoneName.RightThumb2, VRMSchema.HumanoidBoneName.RightThumbDistal],
   [PMDStandardBoneName.RightIndex1, VRMSchema.HumanoidBoneName.RightIndexProximal],
@@ -257,10 +245,22 @@ const pmdToHuman = new Map<string, VRMSchema.HumanoidBoneName>([
   [PMDStandardBoneName.RightMiddle1, VRMSchema.HumanoidBoneName.RightMiddleProximal],
   [PMDStandardBoneName.RightMiddle2, VRMSchema.HumanoidBoneName.RightMiddleIntermediate],
   [PMDStandardBoneName.RightMiddle3, VRMSchema.HumanoidBoneName.RightMiddleDistal],
-  [PMDStandardBoneName.RightRing1, VRMSchema.HumanoidBoneName.RightRingProximal],
-  [PMDStandardBoneName.RightRing2, VRMSchema.HumanoidBoneName.RightRingIntermediate],
-  [PMDStandardBoneName.RightRing3, VRMSchema.HumanoidBoneName.RightRingDistal],
   [PMDStandardBoneName.RightLittle1, VRMSchema.HumanoidBoneName.RightLittleProximal],
   [PMDStandardBoneName.RightLittle2, VRMSchema.HumanoidBoneName.RightLittleIntermediate],
   [PMDStandardBoneName.RightLittle3, VRMSchema.HumanoidBoneName.RightLittleDistal],
+])
+
+const morphToBlendShapeGroup = new Map<string, VRMSchema.BlendShapePresetName>([
+  [PMDMorphName.Blink, VRMSchema.BlendShapePresetName.Blink],
+  [PMDMorphName.BlinkR, VRMSchema.BlendShapePresetName.BlinkR],
+  [PMDMorphName.BlinkL, VRMSchema.BlendShapePresetName.BlinkL],
+  [PMDMorphName.A, VRMSchema.BlendShapePresetName.A],
+  [PMDMorphName.I, VRMSchema.BlendShapePresetName.I],
+  [PMDMorphName.U, VRMSchema.BlendShapePresetName.U],
+  [PMDMorphName.E, VRMSchema.BlendShapePresetName.E],
+  [PMDMorphName.O, VRMSchema.BlendShapePresetName.O],
+  [PMDMorphName.Joy, VRMSchema.BlendShapePresetName.Joy],
+  [PMDMorphName.Angry, VRMSchema.BlendShapePresetName.Angry],
+  [PMDMorphName.Sorrow, VRMSchema.BlendShapePresetName.Sorrow],
+  [PMDMorphName.Fun, VRMSchema.BlendShapePresetName.Fun],
 ])

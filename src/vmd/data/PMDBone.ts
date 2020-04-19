@@ -29,6 +29,7 @@ export const enum PMDStandardBoneName {
   RightToesIK = '右つま先ＩＫ',
   LeftToes = '左つま先',
   RightToes = '右つま先',
+  LeftThumb0 = '左親指0',
   LeftThumb1 = '左親指１',
   LeftThumb2 = '左親指２',
   LeftIndex1 = '左人指１',
@@ -44,6 +45,7 @@ export const enum PMDStandardBoneName {
   LeftLittle1 = '左小指１',
   LeftLittle2 = '左小指２',
   LeftLittle3 = '左小指３',
+  RightThumb0 = '右親指0',
   RightThumb1 = '右親指１',
   RightThumb2 = '右親指２',
   RightIndex1 = '右人指１',
@@ -72,4 +74,19 @@ export const enum PMDSemiStandardBoneName {
   LegIKParent = '足IK親',
   LeftThumb0 = '左親指０',
   RightThumb0 = '右親指０',
+}
+
+export const enum PMDMorphName {
+  Blink = 'まばたき',
+  BlinkR = 'ウィンク',
+  BlinkL = 'ウィンク右',
+  A = 'あ',
+  I = 'い',
+  U = 'う',
+  E = 'え',
+  O = 'お',
+  Joy = '喜',
+  Angry = '怒',
+  Sorrow = '哀',
+  Fun = '楽',
 }

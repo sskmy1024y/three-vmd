@@ -6,7 +6,7 @@ import Controller from './Controls'
 import { Vector3 } from 'three'
 
 import girlModel from '../assets/models/three-vrm-girl.vrm'
-import waitingMotion from '../assets/motions/waiting.vmd'
+import waitingMotion from '../assets/motions/wavefile_v2.vmd'
 
 function App() {
   return (
