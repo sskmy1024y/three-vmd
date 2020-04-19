@@ -6,13 +6,12 @@ import Controller from './Controls'
 import { Vector3 } from 'three'
 
 import girlModel from '../assets/models/three-vrm-girl.vrm'
-
-// import waitingMotion from '../assets/motions/waiting.vmd' // tslint:disable-line:no-var-requires
+import waitingMotion from '../assets/motions/waiting.vmd'
 
 function App() {
   return (
     <Container>
-      <VRMCanvas vrmUrl={girlModel}>
+      <VRMCanvas vrmUrl={girlModel} vmdUrl={waitingMotion}>
         <Controller defaultCameraPosition={[0, 1.5, 1.2]} target={new Vector3(0, 1.2, 0)} />
         <directionalLight position={[1, 1, 1]} />
         <gridHelper />
