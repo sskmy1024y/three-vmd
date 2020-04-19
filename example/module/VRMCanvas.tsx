@@ -1,12 +1,7 @@
 import React, { Suspense } from 'react'
+import Viewer, { ViewerProps } from './Viewer'
 
-interface Props {
-  vrmUrl: string
-  vmdUrl?: string
-  children: React.ReactNode
-}
-
-export default function VRMCanvas({ children, ...props }: Props) {
+export default function VRMCanvas({ children, ...props }: ViewerProps) {
   return (
     <Suspense fallback={null}>
       <Viewer {...props}>{children}</Viewer>
