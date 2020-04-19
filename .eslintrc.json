@@ -1,14 +1,18 @@
 {
   "plugins": [
-    "@typescript-eslint"
+    "@typescript-eslint",
+    "react"
   ],
   "parser": "@typescript-eslint/parser",
   "extends": [
     "eslint:recommended",
+    "standard-jsx",
+    "plugin:react/recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:prettier/recommended",
-    "prettier/@typescript-eslint"
+    "prettier/@typescript-eslint",
+    "prettier/react"
   ],
   "env": {
     "browser": true

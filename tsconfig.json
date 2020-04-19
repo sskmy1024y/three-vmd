@@ -3,10 +3,12 @@
     "outDir": "lib",
     "target": "es5",
     "module": "commonjs",
+    "jsx": "react",
     "lib": [
       "es2018",
       "dom"
     ],
+    "esModuleInterop": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
